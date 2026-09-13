@@ -1,0 +1,158 @@
+.home-services-page {
+  min-height: 100vh;
+  background: #f5f7fb;
+}
+
+/* Header */
+
+.services-header {
+  text-align: center;
+  padding: 70px 20px;
+  background: #eaf2ff;
+}
+
+.services-label {
+  margin: 0 0 12px;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.services-header h1 {
+  margin: 0 auto 15px;
+  max-width: 700px;
+  font-size: 40px;
+  color: #111827;
+}
+
+.services-header > p:last-child {
+  margin: 0 auto;
+  max-width: 600px;
+  color: #6b7280;
+  font-size: 17px;
+}
+
+
+/* Services section */
+
+.services-section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 55px 30px;
+}
+
+.services-section h2 {
+  margin: 0 0 30px;
+  text-align: center;
+  font-size: 30px;
+  color: #111827;
+}
+
+
+/* Cards */
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.service-card {
+  padding: 25px;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.service-icon {
+  width: 55px;
+  height: 55px;
+
+  margin: 0 auto 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #eaf2ff;
+
+  font-size: 25px;
+}
+
+.service-card h3 {
+  margin: 0 0 10px;
+
+  font-size: 20px;
+
+  color: #1f2937;
+}
+
+.service-card p {
+  min-height: 45px;
+
+  margin: 0 0 15px;
+
+  color: #6b7280;
+
+  font-size: 14px;
+
+  line-height: 1.5;
+}
+
+.service-card strong {
+  display: block;
+
+  margin-bottom: 18px;
+
+  color: #2563eb;
+
+  font-size: 14px;
+}
+
+
+/* View Service link */
+
+.view-service-button {
+  display: inline-block;
+
+  padding: 10px 22px;
+
+  border-radius: 7px;
+
+  background: #2563eb;
+
+  color: white;
+
+  text-decoration: none;
+
+  font-size: 14px;
+
+  cursor: pointer;
+}
+
+.view-service-button:hover {
+  background: #1d4ed8;
+}
+
+
+/* Mobile */
+
+@media (max-width: 768px) {
+
+  .services-header h1 {
+    font-size: 30px;
+  }
+
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .services-section {
+    padding: 40px 20px;
+  }
+
+}

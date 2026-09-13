@@ -1,0 +1,147 @@
+.service-details-page {
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 40px 20px;
+
+  background: #f5f7fb;
+}
+
+.service-details-card {
+  width: 100%;
+  max-width: 650px;
+
+  padding: 50px;
+
+  text-align: center;
+
+  background: white;
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 5px 25px rgba(0, 0, 0, 0.08);
+}
+
+.service-details-icon {
+  width: 80px;
+  height: 80px;
+
+  margin: 0 auto 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #eaf2ff;
+
+  font-size: 38px;
+}
+
+.service-details-label {
+  margin: 0 0 10px;
+
+  color: #2563eb;
+
+  font-size: 12px;
+
+  font-weight: bold;
+
+  letter-spacing: 2px;
+}
+
+.service-details-card h1 {
+  margin: 0 0 20px;
+
+  font-size: 38px;
+
+  color: #111827;
+}
+
+.service-details-description {
+  margin: 0 auto 25px;
+
+  max-width: 500px;
+
+  color: #6b7280;
+
+  font-size: 16px;
+
+  line-height: 1.6;
+}
+
+.service-price {
+  margin-bottom: 30px;
+
+  color: #6b7280;
+
+  font-size: 16px;
+}
+
+.service-price strong {
+  color: #2563eb;
+
+  font-size: 22px;
+}
+
+.service-actions {
+  display: flex;
+
+  justify-content: center;
+
+  gap: 15px;
+}
+
+.back-button,
+.book-button {
+  padding: 12px 22px;
+
+  border-radius: 8px;
+
+  font-size: 15px;
+
+  text-decoration: none;
+
+  cursor: pointer;
+}
+
+.back-button {
+  border: 1px solid #d1d5db;
+
+  background: white;
+
+  color: #374151;
+}
+
+.book-button {
+  border: none;
+
+  background: #2563eb;
+
+  color: white;
+}
+
+.book-button:hover {
+  background: #1d4ed8;
+}
+
+.service-not-found {
+  min-height: 100vh;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+}
+
+.service-not-found a {
+  color: #2563eb;
+}
