@@ -6,6 +6,8 @@ import {
   useNavigate,
 } from 'react-router-dom'
 
+import { API_URL } from './config'
+
 import Navbar from './components/Navbar'
 
 import Categories from './pages/Categories'
@@ -28,10 +30,6 @@ import MerchantDashboard from './pages/MerchantDashboard'
 import AdminDashboard from './pages/AdminDashboard'
 
 
-/* =========================================
-   HOME PAGE
-========================================= */
-
 function Home() {
   const navigate = useNavigate()
 
@@ -47,7 +45,7 @@ function Home() {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/services?search=${encodeURIComponent(
+        `${API_URL}/api/services?search=${encodeURIComponent(
           searchValue
         )}`
       )
@@ -71,11 +69,7 @@ function Home() {
         alert('Service not found.')
       }
     } catch (error) {
-      console.error(
-        'Search error:',
-        error
-      )
-
+      console.error('Search error:', error)
       alert(
         'Unable to search services. Please try again.'
       )
@@ -84,9 +78,7 @@ function Home() {
 
   return (
     <main>
-
       <section className="hero-section">
-
         <div className="hero-content">
 
           <h2>
@@ -116,17 +108,11 @@ function Home() {
           </form>
 
         </div>
-
       </section>
-
     </main>
   )
 }
 
-
-/* =========================================
-   APP
-========================================= */
 
 function App() {
   return (
@@ -136,21 +122,15 @@ function App() {
 
       <Routes>
 
-        {/* HOME */}
         <Route
           path="/"
           element={<Home />}
         />
 
-
-        {/* CATEGORIES */}
         <Route
           path="/categories"
           element={<Categories />}
         />
-
-
-        {/* SIX CATEGORY PAGES */}
 
         <Route
           path="/home-services"
@@ -182,24 +162,15 @@ function App() {
           element={<Repairs />}
         />
 
-
-        {/* SERVICE DETAILS */}
-
         <Route
           path="/service/:serviceName"
           element={<ServiceDetails />}
         />
 
-
-        {/* BOOKING */}
-
         <Route
           path="/booking/:serviceName"
           element={<Booking />}
         />
-
-
-        {/* AUTHENTICATION */}
 
         <Route
           path="/login"
@@ -211,24 +182,15 @@ function App() {
           element={<Register />}
         />
 
-
-        {/* CUSTOMER */}
-
         <Route
           path="/my-bookings"
           element={<MyBookings />}
         />
 
-
-        {/* MERCHANT */}
-
         <Route
           path="/merchant-dashboard"
           element={<MerchantDashboard />}
         />
-
-
-        {/* ADMIN */}
 
         <Route
           path="/admin-dashboard"
@@ -240,5 +202,6 @@ function App() {
     </BrowserRouter>
   )
 }
+
 
 export default App

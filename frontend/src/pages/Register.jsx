@@ -1,5 +1,8 @@
 import { useState } from 'react'
 
+import { API_URL } from '../config'
+
+
 function Register() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -7,19 +10,23 @@ function Register() {
   const [role, setRole] = useState('Customer')
   const [message, setMessage] = useState('')
 
+
   const handleRegister = async (event) => {
     event.preventDefault()
 
     setMessage('')
 
+
     try {
       const response = await fetch(
-        'http://localhost:5000/api/auth/register',
+        `${API_URL}/api/auth/register`,
         {
           method: 'POST',
+
           headers: {
             'Content-Type': 'application/json',
           },
+
           body: JSON.stringify({
             name,
             email,
@@ -29,23 +36,30 @@ function Register() {
         }
       )
 
+
       const data = await response.json()
+
 
       if (!response.ok) {
         setMessage(
-          data.message || 'Registration failed'
+          data.message ||
+            'Registration failed'
         )
+
         return
       }
+
 
       setMessage(
         'Registration successful! You can now login.'
       )
 
+
       setName('')
       setEmail('')
       setPassword('')
       setRole('Customer')
+
     } catch (error) {
       console.error(
         'Registration error:',
@@ -58,15 +72,20 @@ function Register() {
     }
   }
 
+
   return (
     <div className="login-container">
+
       <div className="login-card">
 
-        <h2>Create Account</h2>
+        <h2>
+          Create Account
+        </h2>
 
         <p>
           Register with ServiceHub
         </p>
+
 
         <form onSubmit={handleRegister}>
 
@@ -80,6 +99,7 @@ function Register() {
             required
           />
 
+
           <input
             type="email"
             placeholder="Enter your email"
@@ -89,6 +109,7 @@ function Register() {
             }
             required
           />
+
 
           <input
             type="password"
@@ -100,12 +121,14 @@ function Register() {
             required
           />
 
+
           <select
             value={role}
             onChange={(event) =>
               setRole(event.target.value)
             }
           >
+
             <option value="Customer">
               Customer
             </option>
@@ -113,13 +136,16 @@ function Register() {
             <option value="Merchant">
               Merchant
             </option>
+
           </select>
+
 
           <button type="submit">
             Register
           </button>
 
         </form>
+
 
         {message && (
           <p>
@@ -128,8 +154,10 @@ function Register() {
         )}
 
       </div>
+
     </div>
   )
 }
+
 
 export default Register

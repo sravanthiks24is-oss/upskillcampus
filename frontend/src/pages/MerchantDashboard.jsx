@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
 
+import { API_URL } from '../config'
+
+
 function MerchantDashboard() {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
@@ -24,6 +27,7 @@ function MerchantDashboard() {
 
   const token = localStorage.getItem('token')
 
+
   const loadMyServices = async () => {
     if (!token) {
       setMessage('Please login as a merchant first.')
@@ -33,7 +37,7 @@ function MerchantDashboard() {
 
     try {
       const response = await fetch(
-        'http://localhost:5000/api/services'
+        `${API_URL}/api/services`
       )
 
       const data = await response.json()
@@ -60,6 +64,7 @@ function MerchantDashboard() {
         )
 
       setServices(myServices)
+
     } catch (error) {
       console.error(
         'Load services error:',
@@ -74,6 +79,7 @@ function MerchantDashboard() {
     setLoadingServices(false)
   }
 
+
   const loadMerchantBookings = async () => {
     if (!token) {
       setLoadingBookings(false)
@@ -82,7 +88,7 @@ function MerchantDashboard() {
 
     try {
       const response = await fetch(
-        'http://localhost:5000/api/bookings/merchant-bookings',
+        `${API_URL}/api/bookings/merchant-bookings`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -104,6 +110,7 @@ function MerchantDashboard() {
       setBookings(
         data.bookings || []
       )
+
     } catch (error) {
       console.error(
         'Load bookings error:',
@@ -118,10 +125,12 @@ function MerchantDashboard() {
     setLoadingBookings(false)
   }
 
+
   useEffect(() => {
     loadMyServices()
     loadMerchantBookings()
   }, [])
+
 
   const handleCreateService = async (event) => {
     event.preventDefault()
@@ -137,13 +146,15 @@ function MerchantDashboard() {
 
     try {
       const response = await fetch(
-        'http://localhost:5000/api/services',
+        `${API_URL}/api/services`,
         {
           method: 'POST',
+
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
+
           body: JSON.stringify({
             name,
             description,
@@ -175,6 +186,7 @@ function MerchantDashboard() {
       setDuration('')
 
       loadMyServices()
+
     } catch (error) {
       console.error(
         'Create service error:',
@@ -186,6 +198,7 @@ function MerchantDashboard() {
       )
     }
   }
+
 
   const startEditing = (service) => {
     setEditingService(service)
@@ -201,6 +214,7 @@ function MerchantDashboard() {
     setMessage('')
   }
 
+
   const cancelEditing = () => {
     setEditingService(null)
 
@@ -213,6 +227,7 @@ function MerchantDashboard() {
     setMessage('')
   }
 
+
   const handleUpdateService = async (event) => {
     event.preventDefault()
 
@@ -224,13 +239,15 @@ function MerchantDashboard() {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/services/${editingService._id}`,
+        `${API_URL}/api/services/${editingService._id}`,
         {
           method: 'PUT',
+
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
+
           body: JSON.stringify({
             name: editName,
             description: editDescription,
@@ -264,6 +281,7 @@ function MerchantDashboard() {
       setEditDuration('')
 
       loadMyServices()
+
     } catch (error) {
       console.error(
         'Update service error:',
@@ -275,6 +293,7 @@ function MerchantDashboard() {
       )
     }
   }
+
 
   const handleDeleteService = async (serviceId) => {
     const confirmed = window.confirm(
@@ -296,9 +315,10 @@ function MerchantDashboard() {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/services/${serviceId}`,
+        `${API_URL}/api/services/${serviceId}`,
         {
           method: 'DELETE',
+
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -326,6 +346,7 @@ function MerchantDashboard() {
               service._id !== serviceId
           )
       )
+
     } catch (error) {
       console.error(
         'Delete service error:',
@@ -338,10 +359,12 @@ function MerchantDashboard() {
     }
   }
 
+
   return (
     <div className="merchant-dashboard">
 
       <div className="merchant-header">
+
         <h2>
           Merchant Dashboard
         </h2>
@@ -349,7 +372,9 @@ function MerchantDashboard() {
         <p>
           Manage your services and bookings from one place.
         </p>
+
       </div>
+
 
       {/* ADD SERVICE */}
 
@@ -396,6 +421,7 @@ function MerchantDashboard() {
               )
             }
           >
+
             <option value="Home Services">
               Home Services
             </option>
@@ -419,6 +445,7 @@ function MerchantDashboard() {
             <option value="Repairs">
               Repairs
             </option>
+
           </select>
 
           <input
@@ -453,6 +480,7 @@ function MerchantDashboard() {
 
         </form>
 
+
         {message && (
           <p>
             {message}
@@ -460,6 +488,7 @@ function MerchantDashboard() {
         )}
 
       </section>
+
 
       {/* MY SERVICES */}
 
@@ -470,18 +499,24 @@ function MerchantDashboard() {
         </h3>
 
         {loadingServices ? (
+
           <p>
             Loading services...
           </p>
+
         ) : services.length === 0 ? (
+
           <p>
             You have not created any services yet.
           </p>
+
         ) : (
+
           <div>
 
             {services.map(
               (service) => (
+
                 <div
                   key={service._id}
                   className="merchant-service-card"
@@ -523,6 +558,7 @@ function MerchantDashboard() {
                     {service.status}
                   </p>
 
+
                   <button
                     type="button"
                     onClick={() =>
@@ -531,6 +567,7 @@ function MerchantDashboard() {
                   >
                     Edit Service
                   </button>
+
 
                   <button
                     type="button"
@@ -543,10 +580,12 @@ function MerchantDashboard() {
                     Delete Service
                   </button>
 
+
                   {/* EDIT SERVICE */}
 
                   {editingService?._id ===
                     service._id && (
+
                     <form
                       onSubmit={
                         handleUpdateService
@@ -590,6 +629,7 @@ function MerchantDashboard() {
                           )
                         }
                       >
+
                         <option value="Home Services">
                           Home Services
                         </option>
@@ -613,7 +653,9 @@ function MerchantDashboard() {
                         <option value="Repairs">
                           Repairs
                         </option>
+
                       </select>
+
 
                       <input
                         type="number"
@@ -626,6 +668,7 @@ function MerchantDashboard() {
                         }
                         required
                       />
+
 
                       <input
                         type="number"
@@ -641,9 +684,11 @@ function MerchantDashboard() {
                         required
                       />
 
+
                       <button type="submit">
                         Save Changes
                       </button>
+
 
                       <button
                         type="button"
@@ -666,6 +711,7 @@ function MerchantDashboard() {
 
       </section>
 
+
       {/* MY BOOKINGS */}
 
       <section className="merchant-section">
@@ -675,18 +721,24 @@ function MerchantDashboard() {
         </h3>
 
         {loadingBookings ? (
+
           <p>
             Loading bookings...
           </p>
+
         ) : bookings.length === 0 ? (
+
           <p>
             No customer bookings found.
           </p>
+
         ) : (
+
           <div>
 
             {bookings.map(
               (booking) => (
+
                 <div
                   key={booking._id}
                   className="merchant-booking-card"
@@ -744,14 +796,16 @@ function MerchantDashboard() {
                     undefined &&
                     booking.longitude !==
                       undefined && (
-                      <p>
-                        <strong>
-                          Location:
-                        </strong>{' '}
-                        {booking.latitude},{' '}
-                        {booking.longitude}
-                      </p>
-                    )}
+
+                    <p>
+                      <strong>
+                        Location:
+                      </strong>{' '}
+
+                      {booking.latitude},{' '}
+                      {booking.longitude}
+                    </p>
+                  )}
 
                 </div>
               )
@@ -765,5 +819,6 @@ function MerchantDashboard() {
     </div>
   )
 }
+
 
 export default MerchantDashboard

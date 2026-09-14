@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
 
+import { API_URL } from '../config'
+
+
 function AdminDashboard() {
   const [users, setUsers] = useState([])
   const [services, setServices] = useState([])
@@ -9,9 +12,11 @@ function AdminDashboard() {
   const [message, setMessage] = useState('')
   const [activeTab, setActiveTab] = useState('overview')
 
+
   useEffect(() => {
     loadAdminData()
   }, [])
+
 
   const loadAdminData = async () => {
     try {
@@ -25,73 +30,125 @@ function AdminDashboard() {
         return
       }
 
+
       const headers = {
         Authorization: `Bearer ${token}`,
       }
 
-      const [usersResponse, servicesResponse, bookingsResponse] =
-        await Promise.all([
-          fetch('http://localhost:5000/api/admin/users', {
-            headers,
-          }),
-          fetch('http://localhost:5000/api/admin/services', {
-            headers,
-          }),
-          fetch('http://localhost:5000/api/admin/bookings', {
-            headers,
-          }),
-        ])
 
-      const usersData = await usersResponse.json()
-      const servicesData = await servicesResponse.json()
-      const bookingsData = await bookingsResponse.json()
+      const [
+        usersResponse,
+        servicesResponse,
+        bookingsResponse,
+      ] = await Promise.all([
+
+        fetch(
+          `${API_URL}/api/admin/users`,
+          {
+            headers,
+          }
+        ),
+
+        fetch(
+          `${API_URL}/api/admin/services`,
+          {
+            headers,
+          }
+        ),
+
+        fetch(
+          `${API_URL}/api/admin/bookings`,
+          {
+            headers,
+          }
+        ),
+
+      ])
+
+
+      const usersData =
+        await usersResponse.json()
+
+      const servicesData =
+        await servicesResponse.json()
+
+      const bookingsData =
+        await bookingsResponse.json()
+
 
       if (!usersResponse.ok) {
         throw new Error(
-          usersData.message || 'Failed to load users'
+          usersData.message ||
+            'Failed to load users'
         )
       }
+
 
       if (!servicesResponse.ok) {
         throw new Error(
-          servicesData.message || 'Failed to load services'
+          servicesData.message ||
+            'Failed to load services'
         )
       }
+
 
       if (!bookingsResponse.ok) {
         throw new Error(
-          bookingsData.message || 'Failed to load bookings'
+          bookingsData.message ||
+            'Failed to load bookings'
         )
       }
 
-      setUsers(usersData.users || [])
-      setServices(servicesData.services || [])
-      setBookings(bookingsData.bookings || [])
+
+      setUsers(
+        usersData.users || []
+      )
+
+      setServices(
+        servicesData.services || []
+      )
+
+      setBookings(
+        bookingsData.bookings || []
+      )
 
       setMessage('')
+
     } catch (error) {
-      console.error('Admin dashboard error:', error)
+
+      console.error(
+        'Admin dashboard error:',
+        error
+      )
 
       setMessage(
         error.message ||
           'Unable to load admin dashboard data.'
       )
+
     } finally {
+
       setLoading(false)
+
     }
   }
 
+
   const getRoleClass = (role) => {
+
     if (role === 'Admin') {
       return 'admin-role admin-role-admin'
     }
+
 
     if (role === 'Merchant') {
       return 'admin-role admin-role-merchant'
     }
 
+
     return 'admin-role admin-role-customer'
   }
+
 
   return (
     <div className="admin-dashboard">
@@ -99,11 +156,15 @@ function AdminDashboard() {
       {/* HEADER */}
 
       <div className="admin-header">
-        <h2>Admin Dashboard</h2>
+
+        <h2>
+          Admin Dashboard
+        </h2>
 
         <p>
           Manage and monitor the ServiceHub platform.
         </p>
+
       </div>
 
 
@@ -121,47 +182,65 @@ function AdminDashboard() {
       <div className="admin-summary">
 
         <div className="admin-summary-card">
+
           <div className="admin-summary-icon">
             👥
           </div>
 
           <div>
+
             <div className="admin-summary-label">
               Total Users
             </div>
 
-            <h3>{users.length}</h3>
+            <h3>
+              {users.length}
+            </h3>
+
           </div>
+
         </div>
 
 
         <div className="admin-summary-card">
+
           <div className="admin-summary-icon">
             🛠️
           </div>
 
           <div>
+
             <div className="admin-summary-label">
               Total Services
             </div>
 
-            <h3>{services.length}</h3>
+            <h3>
+              {services.length}
+            </h3>
+
           </div>
+
         </div>
 
 
         <div className="admin-summary-card">
+
           <div className="admin-summary-icon">
             🗓️
           </div>
 
           <div>
+
             <div className="admin-summary-label">
               Total Bookings
             </div>
 
-            <h3>{bookings.length}</h3>
+            <h3>
+              {bookings.length}
+            </h3>
+
           </div>
+
         </div>
 
       </div>
@@ -177,10 +256,13 @@ function AdminDashboard() {
               ? 'admin-tab admin-tab-active'
               : 'admin-tab'
           }
-          onClick={() => setActiveTab('overview')}
+          onClick={() =>
+            setActiveTab('overview')
+          }
         >
           Overview
         </button>
+
 
         <button
           className={
@@ -188,10 +270,13 @@ function AdminDashboard() {
               ? 'admin-tab admin-tab-active'
               : 'admin-tab'
           }
-          onClick={() => setActiveTab('users')}
+          onClick={() =>
+            setActiveTab('users')
+          }
         >
           Users
         </button>
+
 
         <button
           className={
@@ -199,10 +284,13 @@ function AdminDashboard() {
               ? 'admin-tab admin-tab-active'
               : 'admin-tab'
           }
-          onClick={() => setActiveTab('services')}
+          onClick={() =>
+            setActiveTab('services')
+          }
         >
           Services
         </button>
+
 
         <button
           className={
@@ -210,7 +298,9 @@ function AdminDashboard() {
               ? 'admin-tab admin-tab-active'
               : 'admin-tab'
           }
-          onClick={() => setActiveTab('bookings')}
+          onClick={() =>
+            setActiveTab('bookings')
+          }
         >
           Bookings
         </button>
@@ -231,9 +321,7 @@ function AdminDashboard() {
 
         <>
 
-          {/* =================================
-              OVERVIEW
-          ================================== */}
+          {/* OVERVIEW */}
 
           {activeTab === 'overview' && (
 
@@ -534,9 +622,7 @@ function AdminDashboard() {
           )}
 
 
-          {/* =================================
-              USERS
-          ================================== */}
+          {/* USERS */}
 
           {activeTab === 'users' && (
 
@@ -627,9 +713,7 @@ function AdminDashboard() {
           )}
 
 
-          {/* =================================
-              SERVICES
-          ================================== */}
+          {/* SERVICES */}
 
           {activeTab === 'services' && (
 
@@ -733,9 +817,7 @@ function AdminDashboard() {
           )}
 
 
-          {/* =================================
-              BOOKINGS
-          ================================== */}
+          {/* BOOKINGS */}
 
           {activeTab === 'bookings' && (
 
@@ -873,5 +955,6 @@ function AdminDashboard() {
     </div>
   )
 }
+
 
 export default AdminDashboard

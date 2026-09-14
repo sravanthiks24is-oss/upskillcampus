@@ -1,828 +1,502 @@
-import { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import './Booking.css'
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+
+import { API_URL } from '../config'
+
 
 function Booking() {
   const { serviceName } = useParams()
+  const navigate = useNavigate()
+
+  const [service, setService] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [message, setMessage] = useState('')
+
+  const [bookingDate, setBookingDate] = useState('')
+  const [bookingTime, setBookingTime] = useState('')
+  const [address, setAddress] = useState('')
+  const [phone, setPhone] = useState('')
+
+  const [latitude, setLatitude] = useState(null)
+  const [longitude, setLongitude] = useState(null)
+
+  const [bookingSuccess, setBookingSuccess] = useState(false)
+
 
   const serviceNames = {
-    // =========================
-    // HOME SERVICES
-    // =========================
-
     plumbing: 'Plumbing',
     electrical: 'Electrical',
     carpentry: 'Carpentry',
     painting: 'Painting',
-    'ac-service': 'AC Service',
     'appliance-repair': 'Appliance Repair',
 
-    // =========================
-    // BEAUTY SERVICES
-    // =========================
-
-    'haircut-styling': 'Haircut & Styling',
+    haircut: 'Haircut',
+    'hair-styling': 'Hair Styling',
     makeup: 'Makeup',
     facial: 'Facial',
-    'manicure-pedicure': 'Manicure & Pedicure',
-    'hair-spa': 'Hair Spa',
+    manicure: 'Manicure',
     'bridal-beauty': 'Bridal Beauty',
-
-    // =========================
-    // CLEANING SERVICES
-    // =========================
 
     'house-cleaning': 'House Cleaning',
     'deep-cleaning': 'Deep Cleaning',
     'bathroom-cleaning': 'Bathroom Cleaning',
     'kitchen-cleaning': 'Kitchen Cleaning',
     'sofa-cleaning': 'Sofa Cleaning',
-    'carpet-cleaning': 'Carpet Cleaning',
-
-    // =========================
-    // FITNESS SERVICES
-    // =========================
+    'office-cleaning': 'Office Cleaning',
 
     'personal-training': 'Personal Training',
-    'yoga-classes': 'Yoga Classes',
-    'zumba-classes': 'Zumba Classes',
+    yoga: 'Yoga',
+    zumba: 'Zumba',
     'gym-training': 'Gym Training',
-    'weight-loss-program': 'Weight Loss Program',
     'fitness-consultation': 'Fitness Consultation',
+    'weight-management': 'Weight Management',
 
-    // =========================
-    // EDUCATION SERVICES
-    // =========================
-
-    'home-tuition': 'Home Tuition',
-    'online-tutoring': 'Online Tutoring',
+    'school-tuition': 'School Tuition',
+    tutoring: 'Tutoring',
+    programming: 'Programming Classes',
     'spoken-english': 'Spoken English',
-    'mathematics-tuition': 'Mathematics Tuition',
-    'programming-classes': 'Programming Classes',
     'exam-preparation': 'Exam Preparation',
-
-    // =========================
-    // REPAIRS SERVICES
-    // =========================
+    'coding-classes': 'Coding Classes',
 
     'mobile-repair': 'Mobile Repair',
     'laptop-repair': 'Laptop Repair',
     'tv-repair': 'TV Repair',
+    'ac-repair': 'AC Repair',
     'washing-machine-repair': 'Washing Machine Repair',
     'refrigerator-repair': 'Refrigerator Repair',
-    'ac-repair': 'AC Repair',
   }
 
-  const service =
-    serviceNames[serviceName] || serviceName
 
-  const [booking, setBooking] = useState({
-    name: '',
-    phone: '',
-    address: '',
-    date: '',
-    time: '',
-    details: '',
-  })
+  useEffect(() => {
+    const fetchService = async () => {
+      try {
+        const actualServiceName =
+          serviceNames[serviceName]
 
-  const [confirmed, setConfirmed] = useState(false)
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-
-  const [location, setLocation] = useState({
-    latitude: null,
-    longitude: null,
-  })
-
-  const [locationMessage, setLocationMessage] = useState('')
-
-  const timeSlots = [
-    '9:00 AM',
-    '11:00 AM',
-    '1:00 PM',
-    '3:00 PM',
-    '5:00 PM',
-    '7:00 PM',
-  ]
-
-  // =========================
-  // CONVERT TIME TO MINUTES
-  // =========================
-
-  const convertTimeToMinutes = (time) => {
-    const [timePart, period] = time.split(' ')
-
-    let [hours, minutes] = timePart
-      .split(':')
-      .map(Number)
-
-    if (period === 'PM' && hours !== 12) {
-      hours += 12
-    }
-
-    if (period === 'AM' && hours === 12) {
-      hours = 0
-    }
-
-    return hours * 60 + minutes
-  }
-
-  // =========================
-  // GET TODAY'S DATE
-  // =========================
-
-  const getTodayDate = () => {
-    const today = new Date()
-
-    const year = today.getFullYear()
-
-    const month = String(
-      today.getMonth() + 1
-    ).padStart(2, '0')
-
-    const day = String(
-      today.getDate()
-    ).padStart(2, '0')
-
-    return `${year}-${month}-${day}`
-  }
-
-  // =========================
-  // CHECK PAST BOOKING
-  // =========================
-
-  const isPastBooking = (date, time) => {
-    if (!date || !time) {
-      return false
-    }
-
-    const selectedDate = new Date(
-      `${date}T00:00:00`
-    )
-
-    const today = new Date()
-
-    today.setHours(
-      0,
-      0,
-      0,
-      0
-    )
-
-    if (selectedDate < today) {
-      return true
-    }
-
-    if (selectedDate > today) {
-      return false
-    }
-
-    const now = new Date()
-
-    const currentMinutes =
-      now.getHours() * 60 +
-      now.getMinutes()
-
-    const selectedMinutes =
-      convertTimeToMinutes(time)
-
-    return selectedMinutes <= currentMinutes
-  }
-
-  // =========================
-  // HANDLE FORM CHANGES
-  // =========================
-
-  const handleChange = (event) => {
-    const {
-      name,
-      value,
-    } = event.target
-
-    setBooking({
-      ...booking,
-      [name]: value,
-    })
-
-    if (
-      name === 'date' ||
-      name === 'time'
-    ) {
-      setError('')
-    }
-  }
-
-  // =========================
-  // GET CURRENT LOCATION
-  // =========================
-
-  const getCurrentLocation = () => {
-    setLocationMessage('')
-    setError('')
-
-    if (!navigator.geolocation) {
-      setLocationMessage(
-        'GPS location is not supported by this browser.'
-      )
-
-      return
-    }
-
-    setLocationMessage(
-      'Getting your location...'
-    )
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const latitude =
-          position.coords.latitude
-
-        const longitude =
-          position.coords.longitude
-
-        setLocation({
-          latitude,
-          longitude,
-        })
-
-        setLocationMessage(
-          'Location detected successfully!'
-        )
-      },
-      (error) => {
-        if (error.code === 1) {
-          setLocationMessage(
-            'Location permission was denied. Please allow location access.'
-          )
-        } else if (error.code === 2) {
-          setLocationMessage(
-            'Unable to determine your location.'
-          )
-        } else {
-          setLocationMessage(
-            'Unable to get your location. Please try again.'
-          )
+        if (!actualServiceName) {
+          setMessage('Service not found.')
+          setLoading(false)
+          return
         }
-      }
-    )
-  }
 
-  // =========================
-  // SUBMIT BOOKING
-  // =========================
-
-  const handleSubmit = async (event) => {
-    event.preventDefault()
-
-    setError('')
-
-    if (
-      isPastBooking(
-        booking.date,
-        booking.time
-      )
-    ) {
-      setError(
-        'You cannot book a service for a past date or time. Please select a future time.'
-      )
-
-      return
-    }
-
-    setLoading(true)
-
-    try {
-      // =========================
-      // CHECK LOGIN TOKEN
-      // =========================
-
-      const token =
-        localStorage.getItem('token')
-
-      if (!token) {
-        setError(
-          'Please login before booking a service.'
-        )
-
-        setLoading(false)
-
-        return
-      }
-
-      // =========================
-      // FIND SERVICE IN DATABASE
-      // =========================
-
-      const serviceResponse =
-        await fetch(
-          `http://localhost:5000/api/services?search=${encodeURIComponent(
-            service
+        const response = await fetch(
+          `${API_URL}/api/services?search=${encodeURIComponent(
+            actualServiceName
           )}`
         )
 
-      const serviceData =
-        await serviceResponse.json()
+        const data = await response.json()
 
-      if (!serviceResponse.ok) {
-        setError(
-          'Unable to load services.'
+        if (!response.ok) {
+          setMessage(
+            data.message ||
+              'Unable to load service.'
+          )
+          setLoading(false)
+          return
+        }
+
+        const foundService =
+          (data.services || []).find(
+            (item) =>
+              item.name.toLowerCase() ===
+              actualServiceName.toLowerCase()
+          )
+
+        if (!foundService) {
+          setMessage('Service not found.')
+          setLoading(false)
+          return
+        }
+
+        setService(foundService)
+      } catch (error) {
+        console.error(
+          'Service loading error:',
+          error
         )
 
+        setMessage(
+          'Unable to connect to server.'
+        )
+      } finally {
         setLoading(false)
-
-        return
       }
+    }
 
-      if (
-        !serviceData.services ||
-        serviceData.services.length === 0
-      ) {
-        setError(
-          `Service "${service}" was not found in the database.`
+    fetchService()
+  }, [serviceName])
+
+
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+      alert(
+        'Geolocation is not supported by your browser.'
+      )
+      return
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLatitude(position.coords.latitude)
+        setLongitude(position.coords.longitude)
+
+        alert(
+          'Location captured successfully.'
+        )
+      },
+      (error) => {
+        console.error(
+          'Location error:',
+          error
         )
 
-        setLoading(false)
-
-        return
+        alert(
+          'Unable to get your location. Please allow location access.'
+        )
       }
+    )
+  }
 
-      // =========================
-      // FIND EXACT SERVICE NAME
-      // =========================
 
-      const selectedService =
-        serviceData.services.find(
-          (item) =>
-            item.name.toLowerCase() ===
-            service.toLowerCase()
-        )
+  const handleBooking = async (event) => {
+    event.preventDefault()
 
-      if (!selectedService) {
-        setError(
-          `Service "${service}" was not found in the database.`
-        )
+    setMessage('')
 
-        setLoading(false)
+    const token = localStorage.getItem('token')
 
-        return
-      }
+    if (!token) {
+      alert('Please login before booking a service.')
+      navigate('/login')
+      return
+    }
 
-      // =========================
-      // CREATE BOOKING
-      // =========================
+    if (!bookingDate || !bookingTime) {
+      setMessage(
+        'Please select booking date and time.'
+      )
+      return
+    }
 
-      const response =
-        await fetch(
-          'http://localhost:5000/api/bookings',
-          {
-            method: 'POST',
+    const selectedDateTime = new Date(
+      `${bookingDate}T${bookingTime}`
+    )
 
-            headers: {
-              'Content-Type':
-                'application/json',
+    const currentDateTime = new Date()
 
-              Authorization:
-                `Bearer ${token}`,
-            },
+    if (
+      isNaN(selectedDateTime.getTime()) ||
+      selectedDateTime <= currentDateTime
+    ) {
+      setMessage(
+        'Please select a future date and time.'
+      )
+      return
+    }
 
-            body: JSON.stringify({
-              service:
-                selectedService._id,
+    if (!address.trim()) {
+      setMessage('Please enter your address.')
+      return
+    }
 
-              bookingDate:
-                booking.date,
+    if (!phone.trim()) {
+      setMessage('Please enter your phone number.')
+      return
+    }
 
-              bookingTime:
-                booking.time,
+    try {
+      const response = await fetch(
+        `${API_URL}/api/bookings`,
+        {
+          method: 'POST',
 
-              address:
-                booking.address,
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
 
-              phone:
-                booking.phone,
+          body: JSON.stringify({
+            service: service._id,
+            bookingDate,
+            bookingTime,
+            address,
+            phone,
+            latitude,
+            longitude,
+          }),
+        }
+      )
 
-              latitude:
-                location.latitude,
-
-              longitude:
-                location.longitude,
-            }),
-          }
-        )
-
-      const data =
-        await response.json()
+      const data = await response.json()
 
       if (!response.ok) {
-        setError(
+        setMessage(
           data.message ||
-          'Booking failed.'
+            'Unable to create booking.'
         )
-
-        setLoading(false)
-
         return
       }
 
-      setConfirmed(true)
+      setBookingSuccess(true)
+
     } catch (error) {
-      setError(
+      console.error(
+        'Booking error:',
+        error
+      )
+
+      setMessage(
         'Unable to connect to server.'
       )
     }
-
-    setLoading(false)
   }
 
-  // =========================
-  // AVAILABLE TIME SLOTS
-  // =========================
 
-  const getAvailableTimeSlots = () => {
-    if (
-      booking.date !==
-      getTodayDate()
-    ) {
-      return timeSlots
-    }
-
-    const now = new Date()
-
-    const currentMinutes =
-      now.getHours() * 60 +
-      now.getMinutes()
-
-    return timeSlots.filter(
-      (time) =>
-        convertTimeToMinutes(time) >
-        currentMinutes
-    )
-  }
-
-  const availableTimeSlots =
-    getAvailableTimeSlots()
-
-  // ===============================
-  // CONFIRMATION PAGE
-  // ===============================
-
-  if (confirmed) {
+  if (loading) {
     return (
-      <div className="confirmation-page">
-
-        <div className="confirmation-card">
-
-          <div className="success-icon">
-            ✓
-          </div>
-
-          <p className="confirmation-label">
-            BOOKING CONFIRMED
-          </p>
-
-          <h1>
-            Your service is booked!
-          </h1>
-
-          <p className="confirmation-message">
-            Your booking request has been successfully submitted.
-          </p>
-
-          <div className="booking-summary">
-
-            <div className="summary-row">
-              <span>
-                Service
-              </span>
-
-              <strong>
-                {service}
-              </strong>
-            </div>
-
-            <div className="summary-row">
-              <span>
-                Name
-              </span>
-
-              <strong>
-                {booking.name}
-              </strong>
-            </div>
-
-            <div className="summary-row">
-              <span>
-                Phone
-              </span>
-
-              <strong>
-                {booking.phone}
-              </strong>
-            </div>
-
-            <div className="summary-row">
-              <span>
-                Date
-              </span>
-
-              <strong>
-                {booking.date}
-              </strong>
-            </div>
-
-            <div className="summary-row">
-              <span>
-                Time
-              </span>
-
-              <strong>
-                {booking.time}
-              </strong>
-            </div>
-
-            <div className="summary-row">
-              <span>
-                Address
-              </span>
-
-              <strong>
-                {booking.address}
-              </strong>
-            </div>
-
-            {location.latitude !== null &&
-              location.longitude !== null && (
-                <div className="summary-row">
-
-                  <span>
-                    GPS Location
-                  </span>
-
-                  <strong>
-                    {location.latitude.toFixed(6)}
-                    {', '}
-                    {location.longitude.toFixed(6)}
-                  </strong>
-
-                </div>
-              )}
-
-          </div>
-
-          <Link
-            to="/home-services"
-            className="home-services-button"
-          >
-            Back to Home Services
-          </Link>
-
-        </div>
-
+      <div style={{ padding: '40px' }}>
+        <h2>Booking</h2>
+        <p>Loading service...</p>
       </div>
     )
   }
 
-  // ===============================
-  // BOOKING FORM
-  // ===============================
+
+  if (message && !service) {
+    return (
+      <div style={{ padding: '40px' }}>
+        <h2>Booking</h2>
+        <p>{message}</p>
+      </div>
+    )
+  }
+
+
+  if (bookingSuccess) {
+    return (
+      <div
+        style={{
+          padding: '40px',
+          maxWidth: '700px',
+          margin: 'auto',
+        }}
+      >
+        <h2>Booking Confirmed</h2>
+
+        <p>
+          Your service booking has been
+          successfully created.
+        </p>
+
+        <p>
+          <strong>Service:</strong>{' '}
+          {service?.name}
+        </p>
+
+        <p>
+          <strong>Date:</strong>{' '}
+          {bookingDate}
+        </p>
+
+        <p>
+          <strong>Time:</strong>{' '}
+          {bookingTime}
+        </p>
+
+        <button
+          type="button"
+          onClick={() =>
+            navigate('/my-bookings')
+          }
+        >
+          View My Bookings
+        </button>
+      </div>
+    )
+  }
+
 
   return (
-    <div className="booking-page">
+    <div
+      style={{
+        padding: '40px',
+        maxWidth: '700px',
+        margin: 'auto',
+      }}
+    >
 
-      <div className="booking-card">
+      <h2>
+        Book {service?.name}
+      </h2>
 
-        <div className="booking-header">
+      <p>
+        <strong>Price:</strong> ₹
+        {service?.price}
+      </p>
 
-          <p>
-            BOOK YOUR SERVICE
-          </p>
+      <p>
+        {service?.description}
+      </p>
 
-          <h1>
-            {service}
-          </h1>
 
-          <span>
-            Fill in your details to request a booking.
-          </span>
+      {message && (
+        <p
+          style={{
+            marginTop: '20px',
+          }}
+        >
+          {message}
+        </p>
+      )}
 
+
+      <form
+        onSubmit={handleBooking}
+        style={{
+          marginTop: '30px',
+        }}
+      >
+
+        <div
+          style={{
+            marginBottom: '20px',
+          }}
+        >
+          <label>
+            <strong>
+              Booking Date
+            </strong>
+          </label>
+
+          <br />
+
+          <input
+            type="date"
+            value={bookingDate}
+            onChange={(event) =>
+              setBookingDate(
+                event.target.value
+              )
+            }
+            required
+          />
         </div>
 
-        <form onSubmit={handleSubmit}>
 
-          {/* FULL NAME */}
+        <div
+          style={{
+            marginBottom: '20px',
+          }}
+        >
+          <label>
+            <strong>
+              Booking Time
+            </strong>
+          </label>
 
-          <div className="form-group">
+          <br />
 
-            <label>
-              Full Name
-            </label>
+          <input
+            type="time"
+            value={bookingTime}
+            onChange={(event) =>
+              setBookingTime(
+                event.target.value
+              )
+            }
+            required
+          />
+        </div>
 
-            <input
-              type="text"
-              name="name"
-              value={booking.name}
-              onChange={handleChange}
-              placeholder="Enter your full name"
-              required
-            />
 
-          </div>
-
-          {/* PHONE */}
-
-          <div className="form-group">
-
-            <label>
-              Phone Number
-            </label>
-
-            <input
-              type="tel"
-              name="phone"
-              value={booking.phone}
-              onChange={handleChange}
-              placeholder="Enter your phone number"
-              required
-            />
-
-          </div>
-
-          {/* ADDRESS */}
-
-          <div className="form-group">
-
-            <label>
+        <div
+          style={{
+            marginBottom: '20px',
+          }}
+        >
+          <label>
+            <strong>
               Address
-            </label>
+            </strong>
+          </label>
 
-            <textarea
-              name="address"
-              value={booking.address}
-              onChange={handleChange}
-              placeholder="Enter your service address"
-              rows="3"
-              required
-            />
+          <br />
 
-          </div>
+          <textarea
+            value={address}
+            onChange={(event) =>
+              setAddress(
+                event.target.value
+              )
+            }
+            placeholder="Enter your address"
+            rows="4"
+            required
+          />
+        </div>
 
-          {/* GPS LOCATION */}
 
-          <div className="form-group">
+        <div
+          style={{
+            marginBottom: '20px',
+          }}
+        >
+          <label>
+            <strong>
+              Phone Number
+            </strong>
+          </label>
 
-            <label>
-              Service Location
-            </label>
+          <br />
 
-            <button
-              type="button"
-              onClick={getCurrentLocation}
-              style={{
-                padding: '10px 15px',
-                cursor: 'pointer',
-                marginBottom: '10px',
-              }}
-            >
-              📍 Use My Current Location
-            </button>
+          <input
+            type="tel"
+            value={phone}
+            onChange={(event) =>
+              setPhone(
+                event.target.value
+              )
+            }
+            placeholder="Enter your phone number"
+            required
+          />
+        </div>
 
-            {locationMessage && (
+
+        <div
+          style={{
+            marginBottom: '20px',
+          }}
+        >
+
+          <button
+            type="button"
+            onClick={handleGetLocation}
+          >
+            Get My Location
+          </button>
+
+          {latitude !== null &&
+            longitude !== null && (
               <p>
-                {locationMessage}
+                📍 Location captured
+                successfully.
               </p>
             )}
 
-            {location.latitude !== null &&
-              location.longitude !== null && (
-                <p>
-                  Latitude:{' '}
-                  {location.latitude.toFixed(6)}
+        </div>
 
-                  <br />
 
-                  Longitude:{' '}
-                  {location.longitude.toFixed(6)}
-                </p>
-              )}
+        <button type="submit">
+          Confirm Booking
+        </button>
 
-          </div>
-
-          {/* DATE AND TIME */}
-
-          <div className="form-row">
-
-            <div className="form-group">
-
-              <label>
-                Preferred Date
-              </label>
-
-              <input
-                type="date"
-                name="date"
-                value={booking.date}
-                onChange={handleChange}
-                min={getTodayDate()}
-                required
-              />
-
-            </div>
-
-            <div className="form-group">
-
-              <label>
-                Preferred Time
-              </label>
-
-              <select
-                name="time"
-                value={booking.time}
-                onChange={handleChange}
-                required
-              >
-
-                <option value="">
-                  Select time
-                </option>
-
-                {availableTimeSlots.map(
-                  (time) => (
-                    <option
-                      key={time}
-                      value={time}
-                    >
-                      {time}
-                    </option>
-                  )
-                )}
-
-              </select>
-
-              {booking.date ===
-                getTodayDate() &&
-                availableTimeSlots.length ===
-                  0 && (
-                  <p>
-                    No more time slots are
-                    available today. Please
-                    choose tomorrow or a
-                    future date.
-                  </p>
-                )}
-
-            </div>
-
-          </div>
-
-          {/* ADDITIONAL DETAILS */}
-
-          <div className="form-group">
-
-            <label>
-              Additional Details
-            </label>
-
-            <textarea
-              name="details"
-              value={booking.details}
-              onChange={handleChange}
-              placeholder="Tell us more about the service you need..."
-              rows="4"
-            />
-
-          </div>
-
-          {/* ERROR */}
-
-          {error && (
-            <p
-              style={{
-                color: 'red',
-                marginBottom: '15px',
-              }}
-            >
-              {error}
-            </p>
-          )}
-
-          {/* CONFIRM BUTTON */}
-
-          <button
-            type="submit"
-            className="confirm-booking-button"
-            disabled={loading}
-          >
-            {loading
-              ? 'Booking...'
-              : 'Confirm Booking'}
-          </button>
-
-        </form>
-
-      </div>
+      </form>
 
     </div>
   )
 }
+
 
 export default Booking

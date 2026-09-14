@@ -1,41 +1,55 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { API_URL } from '../config'
+
+
 function AllServices() {
   const [services, setServices] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
+
   useEffect(() => {
     loadServices()
   }, [])
 
+
   const loadServices = async () => {
     try {
       const response = await fetch(
-        'http://localhost:5000/api/services'
+        `${API_URL}/api/services`
       )
 
       const data = await response.json()
 
       if (!response.ok) {
         throw new Error(
-          data.message || 'Failed to load services'
+          data.message ||
+            'Failed to load services'
         )
       }
 
-      setServices(data.services || [])
+      setServices(
+        data.services || []
+      )
+
     } catch (error) {
-      console.error('Services loading error:', error)
+      console.error(
+        'Services loading error:',
+        error
+      )
 
       setError(
         error.message ||
           'Unable to load services.'
       )
+
     } finally {
       setLoading(false)
     }
   }
+
 
   const createSlug = (name) => {
     return name
@@ -45,6 +59,7 @@ function AllServices() {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '')
   }
+
 
   return (
     <div className="all-services-page">
@@ -98,7 +113,7 @@ function AllServices() {
         )}
 
 
-      {/* ALL 36 SERVICES */}
+      {/* ALL SERVICES */}
 
       {!loading &&
         !error &&
@@ -182,5 +197,6 @@ function AllServices() {
     </div>
   )
 }
+
 
 export default AllServices
