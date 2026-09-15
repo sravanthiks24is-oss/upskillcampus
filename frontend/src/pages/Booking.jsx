@@ -52,6 +52,7 @@ function Booking() {
     'weight-management': 'Weight Management',
 
     'school-tuition': 'School Tuition',
+    'online-tutoring': 'Tutoring',
     tutoring: 'Tutoring',
     programming: 'Programming Classes',
     'spoken-english': 'Spoken English',
@@ -167,7 +168,9 @@ function Booking() {
     const token = localStorage.getItem('token')
 
     if (!token) {
-      alert('Please login before booking a service.')
+      alert(
+        'Please login before booking a service.'
+      )
       navigate('/login')
       return
     }
@@ -196,12 +199,16 @@ function Booking() {
     }
 
     if (!address.trim()) {
-      setMessage('Please enter your address.')
+      setMessage(
+        'Please enter your address.'
+      )
       return
     }
 
     if (!phone.trim()) {
-      setMessage('Please enter your phone number.')
+      setMessage(
+        'Please enter your phone number.'
+      )
       return
     }
 
