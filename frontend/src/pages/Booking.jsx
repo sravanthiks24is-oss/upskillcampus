@@ -52,7 +52,7 @@ function Booking() {
     'weight-management': 'Weight Management',
 
     'school-tuition': 'School Tuition',
-    'online-tutoring': 'Tutoring',
+    'online-tutoring': 'Online Tutoring',
     tutoring: 'Tutoring',
     programming: 'Programming Classes',
     'spoken-english': 'Spoken English',
