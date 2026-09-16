@@ -51,6 +51,7 @@ function Booking() {
     'fitness-consultation': 'Fitness Consultation',
     'weight-management': 'Weight Management',
 
+    'home-tuition': 'Home Tuition',
     'school-tuition': 'School Tuition',
     'online-tutoring': 'Online Tutoring',
     tutoring: 'Tutoring',
