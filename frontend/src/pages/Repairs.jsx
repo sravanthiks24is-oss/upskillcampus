@@ -38,11 +38,11 @@ const services = [
     price: 'Starting from ₹499',
   },
   {
-    name: 'AC Repair',
-    slug: 'ac-repair',
+    name: 'Computer Repair',
+    slug: 'computer-repair',
     description:
-      'Reliable air conditioner repair and maintenance services for cooling and performance issues.',
-    price: 'Starting from ₹499',
+      'Professional computer repair and maintenance services.',
+    price: 'Starting from ₹599',
   },
 ]
 

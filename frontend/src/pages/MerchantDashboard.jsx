@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react'
-
 import { API_URL } from '../config'
-
 
 function MerchantDashboard() {
   const [name, setName] = useState('')
@@ -27,6 +25,9 @@ function MerchantDashboard() {
 
   const token = localStorage.getItem('token')
 
+  // ================================
+  // LOAD MERCHANT SERVICES
+  // ================================
 
   const loadMyServices = async () => {
     if (!token) {
@@ -53,14 +54,18 @@ function MerchantDashboard() {
 
       const loggedInUser =
         JSON.parse(
-          localStorage.getItem('user')
+          localStorage.getItem('user') || '{}'
         )
 
+      const loggedInUserId =
+        loggedInUser.id ||
+        loggedInUser._id
+
       const myServices =
-        data.services.filter(
+        (data.services || []).filter(
           (service) =>
             service.merchant?._id ===
-            loggedInUser?.id
+            loggedInUserId
         )
 
       setServices(myServices)
@@ -79,6 +84,9 @@ function MerchantDashboard() {
     setLoadingServices(false)
   }
 
+  // ================================
+  // LOAD MERCHANT BOOKINGS
+  // ================================
 
   const loadMerchantBookings = async () => {
     if (!token) {
@@ -90,6 +98,7 @@ function MerchantDashboard() {
       const response = await fetch(
         `${API_URL}/api/bookings/merchant-bookings`,
         {
+          method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -125,12 +134,18 @@ function MerchantDashboard() {
     setLoadingBookings(false)
   }
 
+  // ================================
+  // LOAD DATA WHEN PAGE OPENS
+  // ================================
 
   useEffect(() => {
     loadMyServices()
     loadMerchantBookings()
   }, [])
 
+  // ================================
+  // CREATE SERVICE
+  // ================================
 
   const handleCreateService = async (event) => {
     event.preventDefault()
@@ -199,21 +214,35 @@ function MerchantDashboard() {
     }
   }
 
+  // ================================
+  // START EDITING
+  // ================================
 
   const startEditing = (service) => {
     setEditingService(service)
 
     setEditName(service.name)
+
     setEditDescription(
       service.description
     )
-    setEditCategory(service.category)
+
+    setEditCategory(
+      service.category
+    )
+
     setEditPrice(service.price)
-    setEditDuration(service.duration)
+
+    setEditDuration(
+      service.duration
+    )
 
     setMessage('')
   }
 
+  // ================================
+  // CANCEL EDITING
+  // ================================
 
   const cancelEditing = () => {
     setEditingService(null)
@@ -227,6 +256,9 @@ function MerchantDashboard() {
     setMessage('')
   }
 
+  // ================================
+  // UPDATE SERVICE
+  // ================================
 
   const handleUpdateService = async (event) => {
     event.preventDefault()
@@ -294,11 +326,17 @@ function MerchantDashboard() {
     }
   }
 
+  // ================================
+  // DELETE SERVICE
+  // ================================
 
-  const handleDeleteService = async (serviceId) => {
-    const confirmed = window.confirm(
-      'Are you sure you want to delete this service?'
-    )
+  const handleDeleteService = async (
+    serviceId
+  ) => {
+    const confirmed =
+      window.confirm(
+        'Are you sure you want to delete this service?'
+      )
 
     if (!confirmed) {
       return
@@ -359,9 +397,14 @@ function MerchantDashboard() {
     }
   }
 
+  // ================================
+  // PAGE
+  // ================================
 
   return (
     <div className="merchant-dashboard">
+
+      {/* HEADER */}
 
       <div className="merchant-header">
 
@@ -376,7 +419,9 @@ function MerchantDashboard() {
       </div>
 
 
-      {/* ADD SERVICE */}
+      {/* ================================
+          ADD NEW SERVICE
+          ================================ */}
 
       <section className="merchant-section">
 
@@ -480,7 +525,6 @@ function MerchantDashboard() {
 
         </form>
 
-
         {message && (
           <p>
             {message}
@@ -490,7 +534,9 @@ function MerchantDashboard() {
       </section>
 
 
-      {/* MY SERVICES */}
+      {/* ================================
+          MY SERVICES
+          ================================ */}
 
       <section className="merchant-section">
 
@@ -700,19 +746,24 @@ function MerchantDashboard() {
                       </button>
 
                     </form>
+
                   )}
 
                 </div>
+
               )
             )}
 
           </div>
+
         )}
 
       </section>
 
 
-      {/* MY BOOKINGS */}
+      {/* ================================
+          MY BOOKINGS
+          ================================ */}
 
       <section className="merchant-section">
 
@@ -801,17 +852,19 @@ function MerchantDashboard() {
                       <strong>
                         Location:
                       </strong>{' '}
-
                       {booking.latitude},{' '}
                       {booking.longitude}
                     </p>
+
                   )}
 
                 </div>
+
               )
             )}
 
           </div>
+
         )}
 
       </section>
@@ -819,6 +872,5 @@ function MerchantDashboard() {
     </div>
   )
 }
-
 
 export default MerchantDashboard

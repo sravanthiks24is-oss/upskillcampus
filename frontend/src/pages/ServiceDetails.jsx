@@ -54,6 +54,14 @@ const serviceData = {
     icon: '🔧',
   },
 
+  'ac-repair': {
+    name: 'AC Repair',
+    description:
+      'Reliable air conditioner repair and maintenance services for cooling and performance issues.',
+    price: '₹499',
+    icon: '❄️',
+  },
+
   // =========================
   // BEAUTY SERVICES
   // =========================
@@ -306,12 +314,12 @@ const serviceData = {
     icon: '🧊',
   },
 
-  'ac-repair': {
-    name: 'AC Repair',
+  'computer-repair': {
+    name: 'Computer Repair',
     description:
-      'Reliable air conditioner repair and maintenance services for cooling and performance issues.',
-    price: '₹499',
-    icon: '❄️',
+      'Professional computer repair and maintenance services.',
+    price: '₹599',
+    icon: '💻',
   },
 }
 

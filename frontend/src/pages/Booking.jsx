@@ -79,6 +79,8 @@ function Booking() {
     'ac-repair': 'AC Repair',
     'washing-machine-repair': 'Washing Machine Repair',
     'refrigerator-repair': 'Refrigerator Repair',
+    'computer-repair': 'Computer Repair',
+
   }
 
 
